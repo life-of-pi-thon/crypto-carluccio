@@ -1,8 +1,5 @@
-from python_binance.app import test_file
-
+import app
 class interface:
     def __init__(self):
+        a=0
 
-
-sys.path.append(path.abspath('..'))
-print(sys.path)

@@ -4,7 +4,6 @@ import sys
 
 def main():
     """Main entry point for the script."""
-    extend_class_path()
     pass
 
 def extend_class_path():
