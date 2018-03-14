@@ -1,7 +1,10 @@
 from binance.client import Client
-from config import settings as BinanceSettings
+from binance_config import settings as BinanceSettings
+from gdax_config import settings as GdaxSettings
+from gdax.public_client import PublicClient
 
 class Interface:
+
     # markets
     abc = 1
 
@@ -9,6 +12,7 @@ class Interface:
         a=0
         self.binanceClient = Client(BinanceSettings.api_key,
                         BinanceSettings.api_secret)
+        self.gdax_public_client = PublicClient()
         self.MARKET_BINANCE = 'binance'
         self.MARKET_GDAX = 'gdax'
 
@@ -21,12 +25,30 @@ class Interface:
             #]
 
             tickers = self.binanceClient.get_orderbook_ticker()
+            #prices = self.binanceClient.get_order_book('BNBBTC')
             print(tickers)
             #prices = client.get_order_book(symbol='BNBBTC')
             #print(prices)
+            market_books = {}
+            for market in tickers:
+                symbol = market['symbol']
+                market_books[symbol] = {'bids' : [[market['bidPrice'], market['bidQty']]],
+                                       'asks' : [[market['askPrice'], market['askQty']]]}
+            print(market_books)
+
         if exchange == self.MARKET_GDAX:
-            tickers = []
-        return tickers
+            currencies = self.gdax_public_client.get_products()
+            symbols = []
+            market_books = {}
+            for currency in currencies:
+                symbol = currency['display_name'].replace('/','-')
+                symbols.append(symbol)
+                market_book = self.gdax_public_client.get_product_order_book(symbol)
+                market_books[symbol.replace('-','')] = market_book
+            print(symbols)
+            print(market_books)
+
+        return market_books
 
     def create_order(self, **params):
         print(params)
