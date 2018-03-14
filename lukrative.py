@@ -1,11 +1,15 @@
 """Script to gather IMDB keywords from 2013's top grossing movies."""
-from os import path
 import sys
-from compare_prices import comparePrices
+from os import path
+
+from business_logic.compare_prices import ComparePrices
+from business_logic.logic import Logic
 
 def main():
-    comp = comparePrices()
-    comp.get_prices()
+    logic = Logic()
+    logic.logic_to_create()
+    #comp = comparePrices()
+    #comp.get_prices()
     """Main entry point for the script."""
     pass
 
