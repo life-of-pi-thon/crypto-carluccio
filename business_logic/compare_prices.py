@@ -11,19 +11,22 @@ class ComparePrices:
         keys = set(binance_prices.keys()) | set(gdax_prices.keys()) #gets distinct values
         max_market_book = {}
         for symbol in keys:
+            max_bid = 0
+            min_ask = 1000000000
             for exchange in all_prices.keys():
-                max_bid = 0
-                min_ask = 1000000000
+
                 if symbol in all_prices[exchange]:
-                    bid_float_prices = [float(i) for i in all_prices[exchange][symbol]['bids'][0]]
-                    ask_float_prices = [float(i) for i in all_prices[exchange][symbol]['asks'][0]]
-                    if bid_float_prices[0] > max_bid:
-                        max_bid = bid_float_prices[0]
-                        quantity_bid = bid_float_prices[1]
+                    symbol_prices = all_prices[exchange][symbol]
+                    #bid_price = all_prices[exchange][symbol]
+                    #bid_float_prices = [float(i) for i in all_prices[exchange][symbol]['bids'][0]]
+                    #ask_float_prices = [float(i) for i in all_prices[exchange][symbol]['asks'][0]]
+                    if symbol_prices['bidPrice'] > max_bid:
+                        max_bid = symbol_prices['bidPrice']
+                        quantity_bid = symbol_prices['bidQty']
                         max_exchange = exchange
-                    if ask_float_prices[0] < min_ask:
-                        min_ask = ask_float_prices[0]
-                        quantity_ask = ask_float_prices[1]
+                    if symbol_prices['askPrice'] < min_ask:
+                        min_ask = symbol_prices['askPrice']
+                        quantity_ask = symbol_prices['askQty']
                         min_exchange = exchange
             max_market_book[symbol] = {'bids' : {'exchange' : max_exchange,
                                                  'price' : max_bid,
@@ -41,11 +44,10 @@ class ComparePrices:
         for symbol in prices.keys():
             bids = prices[symbol]['bids']
             asks = prices[symbol]['asks']
-            difference = asks['price'] - bids['price']
+            difference =  bids['price'] - asks['price']
             if difference > 0:
-                print('dollar dollar %s', difference)
+                print('%s dollar dollar %s', (symbol, difference))
                 print(prices[symbol])
-            if asks['exchange'] != bids['exchange']:
-                print(prices[symbol])
+            
 
 
