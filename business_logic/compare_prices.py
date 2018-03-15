@@ -48,6 +48,6 @@ class ComparePrices:
             if difference > 0:
                 print('%s dollar dollar %s', (symbol, difference))
                 print(prices[symbol])
-            
+
 
 

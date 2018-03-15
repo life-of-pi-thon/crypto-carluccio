@@ -26,14 +26,19 @@ class Interface:
 
             tickers = self.binanceClient.get_orderbook_ticker()
             #prices = self.binanceClient.get_order_book('BNBBTC')
-            print(tickers)
+            #print(tickers)
             #prices = client.get_order_book(symbol='BNBBTC')
             #print(prices)
             market_books = {}
             for market in tickers:
                 symbol = market['symbol']
-                market_books[symbol] = {'bids' : [[market['bidPrice'], market['bidQty']]],
-                                       'asks' : [[market['askPrice'], market['askQty']]]}
+                market_books[symbol] = {'askPrice' : float(market['askPrice']),
+                                                        'askQty' : float(market['askQty']),
+                                                        'bidPrice': float(market['bidPrice']),
+                                                        'bidQty' : float( market['bidQty'])
+                                                        }
+                # market_books[symbol] = {'bids' : [[market['bidPrice'], market['bidQty']]],
+                #                        'asks' : [[market['askPrice'], market['askQty']]]}
             print(market_books)
 
         if exchange == self.MARKET_GDAX:
@@ -44,7 +49,12 @@ class Interface:
                 symbol = currency['display_name'].replace('/','-')
                 symbols.append(symbol)
                 market_book = self.gdax_public_client.get_product_order_book(symbol)
-                market_books[symbol.replace('-','')] = market_book
+                market_books[symbol.replace('-','')] = {'askPrice' : float(market_book['asks'][0][0]),
+                                                        'askQty' : float(market_book['asks'][0][1]),
+                                                        'bidPrice': float(market_book['bids'][0][0]),
+                                                        'bidQty' : float( market_book['bids'][0][1])
+                                                        }
+
             print(symbols)
             print(market_books)
 
