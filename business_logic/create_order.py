@@ -1,4 +1,6 @@
 from interface.interface import Interface
+
+
 class CreateOrder:
     def __init__(self):
         self.itf = Interface()

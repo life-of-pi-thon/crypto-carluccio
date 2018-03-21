@@ -1,5 +1,5 @@
 exchange_fees = {"decimal": 0.001}
-deposit_fees = {"decimal" : 0}
+deposit_fees = {"decimal": 0}
 withdrawal_fees = {"fixed": {
     "BNB": 0.4,
     "BTC": 0.0005,

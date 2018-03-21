@@ -4,8 +4,8 @@ from gdax_config import settings as GdaxSettings
 from gdax.public_client import PublicClient
 from gdax.authenticated_client import AuthenticatedClient
 
-class Interface:
 
+class Interface:
     def __init__(self):
         self.binanceClient = Client(BinanceSettings.api_key,
                                     BinanceSettings.api_secret)
@@ -37,8 +37,7 @@ class Interface:
                 type=data['type'],
                 quantity=data['quantity'])
             print(order)
-        # TODO find/implement a test order
-
+            # TODO find/implement a test order
 
     def create_order(self, exchange, symbol, side, limit_market, quantity, price=0.0):
         if exchange == self.MARKET_BINANCE:

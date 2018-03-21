@@ -7,4 +7,3 @@ class exchangeFees:
 # class gdax_fees(exchangeFees):
 #     def __init__(self, withdrawal_percent, deposit_percent, trading_percent):
 #         #to complete
-
