@@ -4,11 +4,15 @@ from os import path
 
 from business_logic.compare_prices import ComparePrices
 from business_logic.logic import Logic
+from interface import interface
 
 
 def main():
     comp = ComparePrices()
-    comp.pricing_compare()
+    arbs = comp.pricing_compare()
+
+    for arb in arbs:
+        
     """Main entry point for the script."""
     pass
 
