@@ -41,6 +41,7 @@ class ComparePrices:
     def pricing_compare(self):
         prices = self.get_prices()
         #print(prices)
+        profitable_symbols = {}
         for symbol in prices.keys():
             bids = prices[symbol]['bids']
             asks = prices[symbol]['asks']
@@ -48,6 +49,7 @@ class ComparePrices:
             if difference > 0:
                 print('%s dollar dollar %s', (symbol, difference))
                 print(prices[symbol])
-
+                profitable_symbols[symbol] = prices[symbol]
+        return profitable_symbols
 
 

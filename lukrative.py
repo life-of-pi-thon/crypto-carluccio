@@ -6,9 +6,6 @@ from business_logic.compare_prices import ComparePrices
 from business_logic.logic import Logic
 
 def main():
-
-    #logic = Logic()
-    #logic.logic_to_create()
     comp = ComparePrices()
     comp.pricing_compare()
     """Main entry point for the script."""

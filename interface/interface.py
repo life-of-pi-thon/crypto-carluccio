@@ -7,13 +7,12 @@ from gdax.authenticated_client import AuthenticatedClient
 class Interface:
 
     def __init__(self):
-        a=0
         self.binanceClient = Client(BinanceSettings.api_key,
                                     BinanceSettings.api_secret)
         self.gdax_public_client = PublicClient()
         self.gdax_authenticated_client = AuthenticatedClient(GdaxSettings.api_key,
                                                              GdaxSettings.api_secret,
-                                                             GdaxSettings.passphrase)
+                                                             GdaxSettings.api_passphrase)
         self.MARKET_BINANCE = 'binance'
         self.MARKET_GDAX = 'gdax'
 
