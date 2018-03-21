@@ -2,65 +2,32 @@ from binance.client import Client
 from binance_config import settings as BinanceSettings
 from gdax_config import settings as GdaxSettings
 from gdax.public_client import PublicClient
+from gdax.authenticated_client import AuthenticatedClient
 
 class Interface:
-
-    # markets
-    abc = 1
 
     def __init__(self):
         a=0
         self.binanceClient = Client(BinanceSettings.api_key,
-                        BinanceSettings.api_secret)
+                                    BinanceSettings.api_secret)
         self.gdax_public_client = PublicClient()
+        self.gdax_authenticated_client = AuthenticatedClient(GdaxSettings.api_key,
+                                                             GdaxSettings.api_secret,
+                                                             GdaxSettings.passphrase)
         self.MARKET_BINANCE = 'binance'
         self.MARKET_GDAX = 'gdax'
 
     def get_prices(self, exchange):
-
         if exchange == self.MARKET_BINANCE:
-            #[
-            # {'askQty': '0.30000000', 'askPrice': '0.07570000', 'symbol': 'ETHBTC', 'bidQty': '0.44500000', 'bidPrice': '0.07562400'},
-            # {'askQty': '81.72000000', 'askPrice': '0.01912700', 'symbol': 'LTCBTC', 'bidQty': '1.89000000', 'bidPrice': '0.01912600'}
-            #]
-
-            tickers = self.binanceClient.get_orderbook_ticker()
-            #prices = self.binanceClient.get_order_book('BNBBTC')
-            #print(tickers)
-            #prices = client.get_order_book(symbol='BNBBTC')
-            #print(prices)
-            market_books = {}
-            for market in tickers:
-                symbol = market['symbol']
-                market_books[symbol] = {'askPrice' : float(market['askPrice']),
-                                                        'askQty' : float(market['askQty']),
-                                                        'bidPrice': float(market['bidPrice']),
-                                                        'bidQty' : float( market['bidQty'])
-                                                        }
-                # market_books[symbol] = {'bids' : [[market['bidPrice'], market['bidQty']]],
-                #                        'asks' : [[market['askPrice'], market['askQty']]]}
-            print(market_books)
-
-        if exchange == self.MARKET_GDAX:
-            currencies = self.gdax_public_client.get_products()
-            symbols = []
-            market_books = {}
-            for currency in currencies:
-                symbol = currency['display_name'].replace('/','-')
-                symbols.append(symbol)
-                market_book = self.gdax_public_client.get_product_order_book(symbol)
-                market_books[symbol.replace('-','')] = {'askPrice' : float(market_book['asks'][0][0]),
-                                                        'askQty' : float(market_book['asks'][0][1]),
-                                                        'bidPrice': float(market_book['bids'][0][0]),
-                                                        'bidQty' : float( market_book['bids'][0][1])
-                                                        }
-
-            print(symbols)
-            print(market_books)
-
+            market_books = self.binanceClient.get_products_and_prices()
+        elif exchange == self.MARKET_GDAX:
+            market_books = self.gdax_public_client.get_products_with_prices()
+        else:
+            print("No exchange found with name: " + exchange)
+            # TODO throw exception
         return market_books
 
-    def create_order(self, **params):
+    def create_test_order(self, **params):
         print(params)
         data = params['data']
         print(data)
@@ -71,4 +38,15 @@ class Interface:
                 type=data['type'],
                 quantity=data['quantity'])
             print(order)
+        # TODO find/implement a test order
 
+
+    def create_order(self, exchange, symbol, side, limit_market, quantity, price=0.0):
+        if exchange == self.MARKET_BINANCE:
+            order = self.binanceClient.create_order(symbol, side, quantity, price, type=limit_market)
+        elif exchange == self.MARKET_GDAX:
+            order = self.gdax_authenticated_client.create_order(symbol, side, limit_market, quantity, price)
+        else:
+            print("No exchange found with name: " + exchange)
+            # TODO throw exception
+        print(order)
