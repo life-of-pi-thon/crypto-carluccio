@@ -1,5 +1,5 @@
 from interface.interface import Interface
-
+from business_logic import fees
 
 class ComparePrices:
     def __init__(self):
@@ -44,11 +44,48 @@ class ComparePrices:
         # print(prices)
         profitable_symbols = {}
         for symbol in prices.keys():
-            bids = prices[symbol]['bids']
-            asks = prices[symbol]['asks']
-            difference = bids['price'] - asks['price']
-            if difference > 0:
-                print('%s dollar dollar %s', (symbol, difference))
-                print(prices[symbol])
+            if self.incorporate_fees(symbol, prices[symbol]):
                 profitable_symbols[symbol] = prices[symbol]
         return profitable_symbols
+
+    def incorporate_fees(self, symbol, order):
+        #retrieve out asks/buy and bids/sell
+        asks = order['asks']
+        bids = order['bids']
+        buy_price = asks['price']
+        sell_price = bids['price']
+        if sell_price - buy_price <= 0:
+            return False
+        else:
+            quantity = min(asks['quantity'], bids['quantity'])
+            original_coin_cost = quantity * buy_price
+
+            #use class of exchange fee to get result
+            asks_exchange_fees = fees.exchangeFees(symbol, asks['exchange'])
+            bids_exchange_fees = fees.exchangeFees(symbol, bids['exchange'])
+
+            #buy
+            buy_order_fee = asks_exchange_fees.buy_order_fee(quantity)
+            coin_post_buy = quantity - buy_order_fee
+
+            #withdrawal
+            withdrawal_fee = asks_exchange_fees.full_withdrawal_fee(coin_post_buy)
+            coin_post_withdraw = coin_post_buy - withdrawal_fee
+
+            #deposit
+            deposit_fee = bids_exchange_fees.full_deposit_fee(coin_post_withdraw)
+            coin_post_deposit = coin_post_withdraw - deposit_fee
+
+            #sell
+            sell_order_fee = bids_exchange_fees.sell_order_fee(coin_post_deposit)
+            orignal_coin_post_sell = (coin_post_deposit - sell_order_fee) *  sell_price
+
+            profit_loss = orignal_coin_post_sell - original_coin_cost
+            #keep this for debug purposes
+            if profit_loss > 0:
+                print("profit of %i, wow we're going to be rich from buying %s on %s" % (profit_loss, symbol, order))
+                return True
+            else:
+                print("Loss of %i, wow no money from this order, better have another go here's some info %s on %s" % (profit_loss, symbol, order))
+
+                return False

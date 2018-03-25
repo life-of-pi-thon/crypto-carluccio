@@ -11,8 +11,6 @@ def main():
     comp = ComparePrices()
     arbs = comp.pricing_compare()
 
-    for arb in arbs:
-        
     """Main entry point for the script."""
     pass
 
