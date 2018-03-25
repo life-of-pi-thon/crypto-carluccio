@@ -9,12 +9,13 @@ class Interface:
         self.binanceClient = Client(BinanceSettings.api_key,
                                     BinanceSettings.api_secret)
         self.gdax_public_client = PublicClient()
-        self.gdax_authenticated_client = AuthenticatedClient(GdaxSettings.api_key,
-                                                             GdaxSettings.api_secret,
-                                                             GdaxSettings.api_passphrase)
-        self.sandbox_gdax_authenticated_client = AuthenticatedClient(GdaxSettings.api_key,
-                                                                     GdaxSettings.api_secret,
-                                                                     GdaxSettings.api_passphrase)
+        self.gdax_authenticated_client = AuthenticatedClient(key=GdaxSettings.api_key,
+                                                             b64secret=GdaxSettings.api_secret,
+                                                             passphrase=GdaxSettings.api_passphrase)
+        self.sandbox_gdax_authenticated_client = AuthenticatedClient(key=GdaxSettings.sandbox_key,
+                                                                     b64secret=GdaxSettings.sandbox_secret,
+                                                                     passphrase=GdaxSettings.sandbox_passphrase,
+                                                                     api_url='https://api-public.sandbox.gdax.com')
         self.MARKET_BINANCE = 'binance'
         self.MARKET_GDAX = 'gdax'
 
@@ -31,10 +32,11 @@ class Interface:
     def create_test_order(self, exchange, symbol, side, limit_market, quantity, price=0.0):
         if exchange == self.MARKET_BINANCE:
             response = self.binanceClient.create_test_order(symbol=symbol, side=side, type=limit_market,
-                                                            quantity=quantity, price=price)
+                                                            quantity=quantity, price=price, timeInForce="GTC")
             print(response)
         if exchange == self.MARKET_GDAX:
-            response = self.sandbox_gdax_authenticated_client.create_order(symbol=symbol, side=side, type=limit_market,
+            symbol_reformatted = symbol[:3] + "-" + symbol[3:]
+            response = self.sandbox_gdax_authenticated_client.create_order(symbol=symbol_reformatted, side=side, limit_market=limit_market,
                                                                            quantity=quantity, price=price)
             print(response)
 
