@@ -83,9 +83,8 @@ class ComparePrices:
             profit_loss = orignal_coin_post_sell - original_coin_cost
             #keep this for debug purposes
             if profit_loss > 0:
-                print("profit of %i, wow we're going to be rich from buying %s on %s" % (profit_loss, symbol, order))
+                print("Profit of %i, wow we're going to be rich from buying %s on %s" % (profit_loss, symbol, order))
                 return True
             else:
-                print("Loss of %i, wow no money from this order, better have another go here's some info %s on %s" % (profit_loss, symbol, order))
-
+                print("Loss of %s, wow no money from this order, better have another go here's some info %s on %s" % (profit_loss, symbol, order))
                 return False
