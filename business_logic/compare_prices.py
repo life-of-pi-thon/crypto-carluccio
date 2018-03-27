@@ -8,9 +8,12 @@ class ComparePrices:
     def get_prices(self):
         binance_prices = self.itf.get_prices(self.itf.MARKET_BINANCE)
         gdax_prices = self.itf.get_prices(self.itf.MARKET_GDAX)
+        #TODO additional refactor is required for kraken - including cleanse of symbol name
+        kraken_prices = self.itf.get_prices(self.itf.MARKET_KRAKEN)
         all_prices = {'binance': binance_prices,
-                      'gdax': gdax_prices}
-        keys = set(binance_prices.keys()) | set(gdax_prices.keys())  # gets distinct values
+                      'gdax': gdax_prices,
+                      'kraken': kraken_prices}
+        keys = set(val for keys, values in all_prices.items() for val in values.keys()) # gets distinct values
         max_market_book = {}
         for symbol in keys:
             max_bid = 0

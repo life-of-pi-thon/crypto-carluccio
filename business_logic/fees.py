@@ -1,4 +1,4 @@
-from exchange_fees import binance_fees, gdax_fees
+from exchange_fees import binance_fees, gdax_fees, kraken_fees
 
 
 class exchangeFees:
@@ -21,7 +21,7 @@ class exchangeFees:
         self.set_fees(symbol, exchange)
 
     def set_fees(self, symbol, exchange):
-        all_exchange_fees = dict(binance_fees.fees, **gdax_fees.fees)
+        all_exchange_fees = dict(binance_fees.fees, **gdax_fees.fees, **kraken_fees.fees)
         specific_exchange_fees = all_exchange_fees[exchange]
 
         def get_fee_type_and_amount(wdt_fee): #wdt withdrawal deposit trading
