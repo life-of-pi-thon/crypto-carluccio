@@ -4,7 +4,7 @@ from os import path
 import time
 from business_logic.compare_prices import ComparePrices
 import logging
-from interface.interface import Interface
+from business_logic.logic import Logic
 logger = logging.getLogger('ftpuploader')
 hdlr = logging.FileHandler('ftplog.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
@@ -13,21 +13,11 @@ logger.addHandler(hdlr)
 logger.setLevel(logging.INFO)
 
 def main():
-    interface = Interface()
 
-    def place_test_orders(arbs):
-        for product in arbs.keys():
-            bid_ask = arbs[product]
-            quantity = min(bid_ask["bids"]["quantity"], bid_ask["asks"]["quantity"])
-            # For now just submit a limit order buy and sell at the same time.
-            for key in bid_ask:
-                if key == 'bids':
-                    side = 'sell'
-                elif key == 'asks':
-                    side = 'buy'
-                data = bid_ask[key]
-                interface.create_test_order(data['exchange'], product, side, 'limit', quantity, price=data['price'])
+
+
     comp = ComparePrices()
+    logic = Logic()
     keep_alive = True
 
     while keep_alive:
@@ -36,9 +26,11 @@ def main():
             time.sleep(10)
             if arbs:
                 logger.info(arbs)
-                place_test_orders(arbs)
+                logic.place_test_orders(arbs)
+
         except Exception as e:
-            keep_alive = False
+            keep_alive = True
+            print(str(e))
             logger.error(str(e))
 
     print(arbs)

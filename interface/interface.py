@@ -33,12 +33,12 @@ class Interface:
         if exchange == self.MARKET_BINANCE:
             response = self.binanceClient.create_test_order(symbol=symbol, side=side, type=limit_market,
                                                             quantity=quantity, price=price, timeInForce="GTC")
-            print(response)
+            print(exchange, response)
         if exchange == self.MARKET_GDAX:
             symbol_reformatted = symbol[:3] + "-" + symbol[3:]
             response = self.sandbox_gdax_authenticated_client.create_order(symbol=symbol_reformatted, side=side, limit_market=limit_market,
                                                                            quantity=quantity, price=price)
-            print(response)
+            print(exchange, response)
 
     def create_order(self, exchange, symbol, side, limit_market, quantity, price=0.0):
         if exchange == self.MARKET_BINANCE:
