@@ -3,7 +3,9 @@ from binance_config import settings as BinanceSettings
 from gdax_config import settings as GdaxSettings
 from gdax.public_client import PublicClient as GdaxPublicClient
 from gdax.authenticated_client import AuthenticatedClient as GdaxAuthenticatedClient
-from krakenex.api import API as KrakenAPI
+from python_kraken.krakenex.api import API as KrakenAPI
+import time
+
 class Interface:
     def __init__(self):
         self.binanceClient = BinanceClient(BinanceSettings.api_key,
@@ -38,12 +40,23 @@ class Interface:
         if exchange == self.MARKET_BINANCE:
             response = self.binanceClient.create_test_order(symbol=symbol, side=side, type=limit_market,
                                                             quantity=quantity, price=price, timeInForce="GTC")
-            print(exchange, response)
+            print("order is filled")
+            # The binance test order does not actually get passed to the matching engine, so we're unable to test this.
+
         if exchange == self.MARKET_GDAX:
-            symbol_reformatted = symbol[:3] + "-" + symbol[3:]
+            symbol_reformatted = symbol[:3] + "-" + symbol[3:]  # TODO is this correct?
             response = self.sandbox_gdax_authenticated_client.create_order(symbol=symbol_reformatted, side=side, limit_market=limit_market,
                                                                            quantity=quantity, price=price)
-            print(exchange, response)
+            order_id = response["id"]
+            order_filled = False
+            while not order_filled:
+                order = self.sandbox_gdax_authenticated_client.get_order(order_id)
+                if order["status"] == "done":
+                    print("order is filled!")
+                    order_filled = True
+                else:
+                    print("order not yet filled")
+                    time.sleep(5)
 
     def create_order(self, exchange, symbol, side, limit_market, quantity, price=0.0):
         if exchange == self.MARKET_BINANCE:
@@ -54,3 +67,12 @@ class Interface:
             print("No exchange found with name: " + exchange)
             # TODO throw exception
         print(order)
+
+    def order_filled(self, exchange, order_id):
+        if exchange == self.MARKET_BINANCE:
+            return self.binanceClient.get_order(order_id)['status'] == 'done'
+        elif exchange == self.MARKET_GDAX:
+            return self.gdax_authenticated_client.get_order(order_id)['status'] == 'done'
+        else:
+            return ''
+            #TODO throw exception
